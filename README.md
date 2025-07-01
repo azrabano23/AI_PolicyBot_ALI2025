@@ -182,15 +182,3 @@ npm run build
 3. Make your changes
 4. Test thoroughly
 5. Submit a pull request
-
-## License
-
-This project is created for the Ali 2025 campaign. Please respect the campaign's intellectual property and use responsibly.
-
-## Support
-
-For technical issues or questions about the campaign, visit [ali2025.com](https://www.ali2025.com/) or contact the campaign directly.
-
----
-
-**Built with ❤️ for the Ali 2025 Campaign**
