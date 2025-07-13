@@ -39,7 +39,7 @@ const Ali2025AdvancedBot = () => {
 
     try {
       // Call your backend API here
-      const apiUrl = process.env.NODE_ENV === 'production' ? '/api/chat' : 'http://localhost:8084/api/chat';
+      const apiUrl = process.env.NODE_ENV === 'production' ? '/api/chat' : 'http://localhost:8085/api/chat';
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {

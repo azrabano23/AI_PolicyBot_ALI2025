@@ -2,17 +2,26 @@
 
 **The Official AI-Powered Campaign Assistant for Mussab Ali's 2025 Jersey City Mayoral Campaign**
 
-This intelligent chatbot provides instant, accurate answers to voter questions about Mussab Ali's policies, experience, and vision for Jersey City. Built specifically for campaign volunteers and staff to help engage with voters effectively.
+🔥 **This intelligent chatbot now works like ChatGPT for your campaign!** It provides comprehensive, detailed responses to voter questions about Mussab Ali's policies, experience, and vision for Jersey City. Built specifically for campaign volunteers, staff, and voters to get in-depth information instantly.
+
+## 🚀 **NEW: Enhanced ChatGPT-Like Experience**
+
+- 🧠 **OpenAI GPT-3.5 Integration**: Provides comprehensive, multi-paragraph responses
+- 📚 **Detailed Policy Explanations**: 4-6 paragraph responses with implementation details
+- 🎯 **Smart FAQ System**: 18+ pre-programmed responses for common voter questions
+- 🔄 **Hybrid Intelligence**: Combines pre-programmed accuracy with AI flexibility
+- 📖 **Educational Content**: Explains the 'why' behind policies with context and examples
 
 ## ✨ Key Features
 
-- 🤖 **Smart Q&A System**: 18+ pre-programmed responses to common voter questions
-- 🎠 **Interactive Question Carousel**: Beautiful rotating display of key campaign topics
+- 🤖 **ChatGPT-Level Responses**: Comprehensive, detailed answers that rival professional AI assistants
+- 🎠 **Interactive Question Carousel**: Beautiful rotating display of 18 key campaign topics
 - 🇺🇸 **Patriotic Design**: Red, white, and blue theme reflecting American values
 - 📱 **Mobile-Friendly**: Works perfectly on phones, tablets, and computers
 - ⚡ **Real-Time Updates**: Automatically pulls latest info from ali2025.com
 - 🎯 **Campaign-Focused**: Addresses real voter concerns with Mussab's actual positions
 - 📊 **Source Attribution**: Every answer includes links to official campaign materials
+- 🔄 **Auto-Advancing Carousel**: Questions rotate every 5 seconds with manual controls
 
 ## Project Structure
 
@@ -330,6 +339,114 @@ The bot has specific, detailed responses for these 18 key voter concerns:
 16. **McGreevey supporters**: "I want to vote for Jim McGreevey"
 17. **O'Dea supporters**: "I want to vote for Bill O'Dea"
 18. **Solomon supporters**: "I want to vote for James Solomon"
+
+---
+
+## 🔧 Technical Documentation
+
+### How the System Works
+
+This bot uses a **hybrid intelligence approach** combining pre-programmed FAQ responses with OpenAI's GPT-3.5 for comprehensive answers:
+
+1. **User Query Processing**: When a user asks a question, the system first checks if it matches any of the 18 pre-programmed FAQ topics
+2. **Keyword Matching**: Uses sophisticated keyword matching to identify relevant FAQ topics
+3. **FAQ Priority**: If a match is found, returns the exact campaign-approved response
+4. **AI Fallback**: For questions not covered by FAQs, the system uses OpenAI GPT-3.5 with campaign context
+5. **Website Context**: All AI responses include real-time context from ali2025.com
+
+### File Structure Explained
+
+#### Backend Files (`/backend/`)
+
+**`src/app.py`** - The main Flask application file containing:
+- `Ali2025WebScraper` class: Handles website scraping and content discovery
+- `Ali2025ChatBot` class: Manages FAQ responses and OpenAI integration
+- API endpoints: `/api/chat`, `/api/health`, `/api/refresh-cache`
+- Caching system: 5-minute cache for website content
+- Environment configuration and error handling
+
+**`requirements.txt`** - Python dependencies:
+```
+Flask==2.3.2
+Flask-CORS==4.0.0
+requests==2.31.0
+beautifulsoup4==4.12.2
+openai==0.27.8
+python-dotenv==1.0.0
+gunicorn==21.2.0
+```
+
+**`.env`** - Environment variables (created during setup):
+- `OPENAI_API_KEY`: Your OpenAI API key
+- `PORT`: Backend server port (default: 8085)
+- `ALI_WEBSITE_URL`: Campaign website URL
+- `CACHE_DURATION`: How long to cache website content
+
+#### Frontend Files (`/frontend/`)
+
+**`src/components/Ali2025AdvancedBot.jsx`** - Main React component containing:
+- Chat interface with message history
+- Interactive question carousel with 18 pre-defined questions
+- Auto-advancing carousel (5-second intervals)
+- Real-time API communication with backend
+- Responsive design with Tailwind CSS
+- Source attribution and link handling
+
+**`package.json`** - Frontend dependencies including:
+- React 18+ for UI framework
+- Tailwind CSS for styling
+- Lucide React for icons
+- Development and build scripts
+
+**`tailwind.config.js`** - Tailwind CSS configuration:
+- Custom color schemes for patriotic theme
+- Responsive breakpoints
+- Animation configurations
+
+### API Communication Flow
+
+1. **User Input**: User types question or clicks carousel item
+2. **Frontend Processing**: React component sends POST request to `/api/chat`
+3. **Backend Processing**:
+   - Checks FAQ keywords first
+   - If no match, scrapes latest website content
+   - Sends to OpenAI with campaign context
+   - Returns formatted response with sources
+4. **Frontend Display**: Shows response with typing animation and source links
+
+### FAQ Keyword System
+
+Each of the 18 FAQ topics has specific keywords that trigger responses:
+
+```javascript
+"experience": {
+    "keywords": ["experience", "inexperienced", "young", "qualify", "qualified", "age", "too young"]
+},
+"housing": {
+    "keywords": ["housing", "rent", "afford", "expensive", "house", "apartment", "affordable"]
+}
+```
+
+### OpenAI Integration Details
+
+**Model**: GPT-3.5-turbo
+**Max Tokens**: 1200 (for comprehensive responses)
+**Temperature**: 0.7 (balanced creativity)
+**System Prompt**: Detailed instructions for campaign-focused responses
+
+### Caching Strategy
+
+- **Website Content**: Cached for 5 minutes to balance freshness with performance
+- **Automatic Refresh**: Cache updates automatically when expired
+- **Manual Refresh**: Available via `/api/refresh-cache` endpoint
+- **Error Handling**: Graceful fallback when scraping fails
+
+### Security Considerations
+
+- **API Key Protection**: OpenAI key stored in environment variables
+- **CORS Configuration**: Proper cross-origin request handling
+- **Input Validation**: User input sanitization and validation
+- **Rate Limiting**: Built-in protection against spam
 
 ---
 
