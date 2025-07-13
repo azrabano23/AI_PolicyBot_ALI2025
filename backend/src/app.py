@@ -38,6 +38,19 @@ class Ali2025WebScraper:
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         })
+        
+        # Reputable sources for external information
+        self.reputable_sources = {
+            'jersey_city_gov': 'https://www.jerseycitynj.gov/',
+            'nj_gov': 'https://www.nj.gov/',
+            'hudson_county': 'https://www.hudsoncountynj.org/',
+            'jersey_journal': 'https://www.nj.com/hudson/',
+            'tap_into_jc': 'https://www.tapinto.net/towns/jersey-city',
+            'njcom_politics': 'https://www.nj.com/politics/',
+            'jersey_city_times': 'https://jerseycitytimes.com/',
+            'vote411': 'https://www.vote411.org/ballot',
+            'ballotpedia': 'https://ballotpedia.org/Jersey_City,_New_Jersey'
+        }
     
     def get_page_content(self, url):
         """Fetch and parse content from a webpage"""
@@ -112,6 +125,53 @@ class Ali2025WebScraper:
             time.sleep(1)  # Be respectful to the server
         
         return scraped_content
+    
+    def search_external_sources(self, query, max_sources=3):
+        """Search reputable external sources for additional context"""
+        external_content = {}
+        search_terms = query.lower()
+        
+        # Define search strategies for different topics
+        topic_sources = {
+            'jersey city': ['jersey_city_gov', 'jersey_journal', 'tap_into_jc'],
+            'education': ['jersey_city_gov', 'nj_gov'],
+            'housing': ['jersey_city_gov', 'hudson_county'],
+            'transportation': ['jersey_city_gov', 'nj_gov'],
+            'crime': ['jersey_city_gov', 'jersey_journal'],
+            'budget': ['jersey_city_gov', 'hudson_county'],
+            'politics': ['njcom_politics', 'ballotpedia', 'vote411'],
+            'election': ['ballotpedia', 'vote411', 'jersey_city_times']
+        }
+        
+        # Determine which sources to search based on query
+        relevant_sources = []
+        for topic, sources in topic_sources.items():
+            if topic in search_terms:
+                relevant_sources.extend(sources)
+        
+        # If no specific topic, use general Jersey City sources
+        if not relevant_sources:
+            relevant_sources = ['jersey_city_gov', 'jersey_journal', 'tap_into_jc']
+        
+        # Remove duplicates and limit
+        relevant_sources = list(set(relevant_sources))[:max_sources]
+        
+        for source_key in relevant_sources:
+            try:
+                source_url = self.reputable_sources[source_key]
+                content = self.get_page_content(source_url)
+                if content:
+                    # Filter content for relevance
+                    if any(term in content['content'].lower() for term in ['jersey city', 'municipal', 'mayor', 'election']):
+                        external_content[source_url] = content
+                        logger.info(f"Successfully scraped external source: {source_url}")
+                    
+                time.sleep(2)  # Be respectful to external servers
+            except Exception as e:
+                logger.warning(f"Could not access external source {source_key}: {str(e)}")
+                continue
+        
+        return external_content
 
 class Ali2025ChatBot:
     def __init__(self):
