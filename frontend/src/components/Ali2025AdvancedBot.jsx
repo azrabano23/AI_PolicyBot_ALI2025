@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Bot, User, ExternalLink, Calendar, Users, FileText, Home } from 'lucide-react';
+import { Send, Bot, User, ExternalLink, Calendar, Users, FileText, Home, ChevronLeft, ChevronRight, Star, Flag, Heart } from 'lucide-react';
 
 const Ali2025AdvancedBot = () => {
   const [messages, setMessages] = useState([
@@ -39,7 +39,7 @@ const Ali2025AdvancedBot = () => {
 
     try {
       // Call your backend API here
-      const apiUrl = process.env.NODE_ENV === 'production' ? 'http://localhost:8081/api/chat' : '/api/chat';
+      const apiUrl = process.env.NODE_ENV === 'production' ? '/api/chat' : 'http://localhost:8084/api/chat';
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -84,36 +84,68 @@ const Ali2025AdvancedBot = () => {
     }
   };
 
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  
+  // Auto-advance carousel every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentQuestionIndex((prev) => (prev + 1) % 18); // 18 is the total number of questions
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+  
   const quickQuestions = [
-    { icon: Home, text: "What are Mussab's housing policies?", category: "policy" },
-    { icon: Users, text: "How can I volunteer for the campaign?", category: "volunteer" },
-    { icon: Calendar, text: "What are upcoming campaign events?", category: "events" },
-    { icon: FileText, text: "What's Mussab's stance on education?", category: "policy" }
+    { icon: User, text: "Mussab doesn't have any experience – why should I vote for him?", category: "experience", color: "bg-red-500" },
+    { icon: FileText, text: "Mussab just has talking points but no concrete policy proposals.", category: "policy", color: "bg-blue-500" },
+    { icon: Calendar, text: "When he was president the school board budget increased which led to higher taxes, I don't like that!", category: "taxes", color: "bg-green-500" },
+    { icon: Users, text: "There is a lot of corruption on the school board, a group that Mussab is strongly affiliated with. I don't want more corruption in Jersey City.", category: "corruption", color: "bg-purple-500" },
+    { icon: Star, text: "I haven't heard of him before – is Mussab a serious candidate?", category: "candidate", color: "bg-yellow-500" },
+    { icon: Heart, text: "Why is Mussab's faith so important to him? Why does he need to mention it as a part of his story?", category: "faith", color: "bg-pink-500" },
+    { icon: Users, text: "Jersey City has gotten more dangerous over the years. What's Mussab going to do about that?", category: "safety", color: "bg-red-600" },
+    { icon: Home, text: "Public transit is more expensive and worse quality than ever in Jersey City!", category: "transit", color: "bg-blue-600" },
+    { icon: Home, text: "I can't afford to buy a house in Jersey City anymore and rent is too expensive.", category: "housing", color: "bg-green-600" },
+    { icon: FileText, text: "It's hard to find a good job with a fair wage to afford to live in Jersey City anymore. How is Mussab going to improve that?", category: "jobs", color: "bg-purple-600" },
+    { icon: Users, text: "I pay a lot to live in Jersey City and the public schools for my kids aren't very good. How is Mussab going to improve them?", category: "schools", color: "bg-indigo-500" },
+    { icon: Flag, text: "What is Mussab going to do to combat climate change as Mayor of Jersey City?", category: "climate", color: "bg-emerald-500" },
+    { icon: Users, text: "I'm sick of all the corruption in our city! How is Mussab going to change that?", category: "corruption_general", color: "bg-red-700" },
+    { icon: Star, text: "I really liked our previous Mayor Fulop. Why should I vote for Mussab – isn't he anti-Fulop?", category: "fulop_positive", color: "bg-blue-700" },
+    { icon: User, text: "I disliked our previous Mayor Fulop. How is Mussab going to be different?", category: "fulop_negative", color: "bg-slate-600" },
+    { icon: Users, text: "I want to vote for Jim McGreevey, why should I vote for Mussab?", category: "mcgreevey", color: "bg-gray-600" },
+    { icon: Users, text: "I want to vote for Bill O'Dea, why should I vote for Mussab?", category: "odea", color: "bg-orange-600" },
+    { icon: Users, text: "I want to vote for James Solomon, why should I vote for Mussab?", category: "solomon", color: "bg-teal-600" }
   ];
+  
+  const nextQuestion = () => {
+    setCurrentQuestionIndex((prev) => (prev + 1) % quickQuestions.length);
+  };
+  
+  const prevQuestion = () => {
+    setCurrentQuestionIndex((prev) => (prev - 1 + quickQuestions.length) % quickQuestions.length);
+  };
 
   const handleQuickQuestion = (question) => {
     setInputValue(question);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-red-50">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-blue-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-slate-200">
+    <div className="bg-gradient-to-r from-red-600 to-blue-600 shadow-sm border-b border-slate-200">
         <div className="max-w-5xl mx-auto px-6 py-4">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-red-600 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-blue-600 rounded-full flex items-center justify-center">
               <Bot className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-800">Ali 2025 Campaign Assistant</h1>
-              <p className="text-sm text-slate-500">Real-time Policy & Campaign Information</p>
+              <h1 className="text-xl font-bold text-white">Ali 2025 Campaign Assistant</h1>
+              <p className="text-sm text-red-100">Real-time Policy & Campaign Information</p>
             </div>
             <div className="ml-auto">
               <a 
                 href="https://www.ali2025.com/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors duration-200"
+                className="flex items-center space-x-2 text-white hover:text-red-100 transition-colors duration-200"
               >
                 <ExternalLink className="w-4 h-4" />
                 <span className="font-medium">Visit ali2025.com</span>
@@ -123,21 +155,76 @@ const Ali2025AdvancedBot = () => {
         </div>
       </div>
 
-      {/* Quick Questions */}
-      <div className="max-w-5xl mx-auto px-6 py-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-          {quickQuestions.map((question, index) => (
-            <button
-              key={index}
-              onClick={() => handleQuickQuestion(question.text)}
-              className="p-3 bg-white rounded-lg shadow-sm border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 text-left group"
-            >
-              <div className="flex items-center space-x-3">
-                <question.icon className="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors duration-200" />
-                <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">{question.text}</span>
-              </div>
-            </button>
-          ))}
+      {/* Quick Questions Carousel */}
+      <div className="max-w-5xl mx-auto px-6 py-6">
+        <div className="bg-gradient-to-r from-red-100 to-blue-100 p-6 rounded-xl shadow-sm border border-slate-200">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-slate-800 flex items-center space-x-2">
+              <Flag className="w-5 h-5 text-red-600" />
+              <span>Common Questions About Mussab Ali</span>
+            </h2>
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-slate-600 font-medium">
+                {currentQuestionIndex + 1} of {quickQuestions.length}
+              </span>
+              <button
+                onClick={prevQuestion}
+                className="p-2 rounded-full bg-white shadow-sm border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all duration-200"
+              >
+                <ChevronLeft className="w-4 h-4 text-slate-600" />
+              </button>
+              <button
+                onClick={nextQuestion}
+                className="p-2 rounded-full bg-white shadow-sm border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all duration-200"
+              >
+                <ChevronRight className="w-4 h-4 text-slate-600" />
+              </button>
+            </div>
+          </div>
+          
+          <div className="relative overflow-hidden">
+            <div className="flex transition-transform duration-300 ease-in-out" style={{ transform: `translateX(-${currentQuestionIndex * 100}%)` }}>
+              {quickQuestions.map((question, index) => {
+                const IconComponent = question.icon;
+                return (
+                  <div key={index} className="w-full flex-shrink-0">
+                    <button
+                      onClick={() => handleQuickQuestion(question.text)}
+                      className="w-full p-6 bg-white rounded-lg shadow-sm border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 text-left group"
+                    >
+                      <div className="flex items-start space-x-4">
+                        <div className={`w-12 h-12 ${question.color} rounded-full flex items-center justify-center flex-shrink-0 shadow-sm`}>
+                          <IconComponent className="w-6 h-6 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-1">{question.category}</div>
+                          <p className="text-base font-semibold text-slate-800 group-hover:text-slate-900 leading-relaxed">
+                            {question.text}
+                          </p>
+                          <div className="mt-3 text-xs text-blue-600 font-medium group-hover:text-blue-700 transition-colors duration-200">
+                            Click to ask this question →
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          
+          {/* Question indicators */}
+          <div className="flex justify-center mt-4 space-x-2">
+            {quickQuestions.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentQuestionIndex(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                  index === currentQuestionIndex ? 'bg-blue-600' : 'bg-slate-300 hover:bg-slate-400'
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
 

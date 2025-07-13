@@ -144,6 +144,112 @@ class Ali2025ChatBot:
         Always cite your sources and encourage users to get involved in the campaign."""
     
     def generate_response(self, user_message, website_content):
+        # Mussab-specific Q&A with better keyword matching
+        mussab_qa = {
+            "experience": {
+                "question": "Mussab doesn't have any experience – why should I vote for him?",
+                "answer": "While Mussab is young (he's 28 and the only candidate running under 40), he is also ridiculously accomplished. After the Covid-19 pandemic, he went to Harvard Law School, beat cancer, was elected to the school board (the only mayoral candidate to hold city-wide office in Jersey City), and was then elected the youngest school board president in Jersey City history. He's young, but we think of that as a feature, not a bug for someone as accomplished as him!",
+                "keywords": ["experience", "inexperienced", "young", "qualify", "qualified", "age", "too young"]
+            },
+            "policies": {
+                "question": "Mussab just has talking points but no concrete policy proposals.",
+                "answer": "Check out our website! Mussab has a lot of great, detailed policy explanations for what he'd do in office. Everything from expanding bus service citywide to criminal justice reform in Jersey City. You will see detailed policies backed by data and a clear understanding of what matters to Jersey City residents.",
+                "keywords": ["talking points", "policy", "policies", "proposals", "concrete", "detailed", "plan", "plans"]
+            },
+            "taxes": {
+                "question": "When he was president the school board budget increased which led to higher taxes, I don't like that!",
+                "answer": "A small raise in taxes for a few people is a small price to pay for the future of our city's children. Mussab never has been and never will be afraid to make tough choices for the future of our city.",
+                "keywords": ["taxes", "budget", "increase", "higher", "expensive", "cost", "money"]
+            },
+            "corruption": {
+                "question": "There is a lot of corruption on the school board, a group that Mussab is strongly affiliated with. I don't want more corruption in Jersey City.",
+                "answer": "Mussab was president of the school board during the pandemic, he went to law school and has been running for mayor during the current scandals. When Mussab was president, the school board was a reputable organization. He will institute that same reputability to the mayor's office when he wins this year.",
+                "keywords": ["corruption", "corrupt", "scandal", "ethics", "dishonest", "school board"]
+            },
+            "serious": {
+                "question": "I haven't heard of him before – is Mussab a serious candidate?",
+                "answer": "Absolutely, Mussab is consistently one of the top fundraisers in the race, has had national figures such as Keith Ellison, Ilhan Omar, and Ro Khanna supporting his campaign and is the only candidate in this race who has successfully won an election for a city-wide office in Jersey City.",
+                "keywords": ["serious", "haven't heard", "unknown", "candidate", "fundraising", "support"]
+            },
+            "faith": {
+                "question": "Why is Mussab's faith so important to him? Why does he need to mention it as a part of his story?",
+                "answer": "Mussab's Islamic faith is a core part of who he is and he doesn't want to shy away from it. Of course, Mussab is running for a Jersey City for all, regardless of faith, color, or creed. That said, he doesn't want to hide who he is – his faith is a core reason he was called to public service when our incumbent President insulted Jersey City by lying and saying that people like Mussab's parents celebrated 9/11. Mussab runs for the dignity of all people to ensure bigots like our current president don't have the final say on our city.",
+                "keywords": ["faith", "religion", "islamic", "muslim", "mention", "important"]
+            },
+            "safety": {
+                "question": "Jersey City has gotten more dangerous over the years. What's Mussab going to do about that?",
+                "answer": "Mussab is going to continue to invest in our police department while holding them accountable. We need accountable law enforcement, not just a department with a blank check. Jersey City ranks among the lowest of New Jersey cities in police accountability when complaints are received. We need to stop this while ensuring that citizens feel safe. This isn't hard to do – it just requires leadership that demands accountability and results.",
+                "keywords": ["dangerous", "safety", "crime", "police", "law enforcement", "security"]
+            },
+            "transit": {
+                "question": "Public transit is more expensive and worse quality than ever in Jersey City!",
+                "answer": "Mussab is adding bus lines and making city buses free for all. He is additionally going to demand a share of congestion pricing revenue to reinvest in our city.",
+                "keywords": ["transit", "bus", "transportation", "expensive", "quality", "public transport"]
+            },
+            "housing": {
+                "question": "I can't afford to buy a house in Jersey City anymore and rent is too expensive.",
+                "answer": "Mussab is committing to expand zoning to allow more residential construction and approve over 25,000 units to meet the demand of Jersey City residents. He also will ensure that all new buildings have affordable housing units, will cap rent increases by developers, and will prioritize Jersey City residents for affordable housing.",
+                "keywords": ["housing", "rent", "afford", "expensive", "house", "apartment", "affordable"]
+            },
+            "jobs": {
+                "question": "It's hard to find a good job with a fair wage to afford to live in Jersey City anymore. How is Mussab going to improve that?",
+                "answer": "Mussab is committed to bringing high paying jobs to Jersey City and ensuring that residents get access to the best job training services possible. Mussab increased teacher pay significantly during his tenure as school board president and looks forward to doing the same for all Jersey City residents, while making Jersey City the best place to do business with policies such as permitting reform.",
+                "keywords": ["jobs", "employment", "wage", "salary", "work", "career", "training"]
+            },
+            "schools": {
+                "question": "I pay a lot to live in Jersey City and the public schools for my kids aren't very good. How is Mussab going to improve them?",
+                "answer": "Mussab was president of the school board so he understands better than anyone else running in this race what it takes to run our public schools and improve them. Graduation rates rose significantly during his tenure, he improved teacher pay, removed lead from drinking water, and provided prescription glasses to students free of charge.",
+                "keywords": ["schools", "education", "kids", "children", "students", "teachers", "learning"]
+            },
+            "climate": {
+                "question": "What is Mussab going to do to combat climate change as Mayor of Jersey City?",
+                "answer": "Mussab is prioritizing public transit options (including free city-wide buses) and bike access infrastructure as Mayor to ensure that we continue to improve on the air quality and environmental friendliness of Jersey City.",
+                "keywords": ["climate", "environment", "green", "sustainability", "carbon", "pollution"]
+            },
+            "corruption_general": {
+                "question": "I'm sick of all the corruption in our city! How is Mussab going to change that?",
+                "answer": "Mussab is committed to ending pay-to-play politics. You don't get a seat at the table just because you donated to his campaign. We need to turn city contracts into a meritocracy. It reduces costs for Jersey City residents and ensures our community gets the best service.",
+                "keywords": ["corruption", "pay-to-play", "contracts", "politics", "ethics", "transparency"]
+            },
+            "fulop_positive": {
+                "question": "I really liked our previous Mayor Fulop. Why should I vote for Mussab – isn't he anti-Fulop?",
+                "answer": "Mayor Fulop did a lot of things right, but ultimately he left behind a Jersey City that is harder for everyday people to afford. And there are new challenges that he couldn't predict that require new leadership. Trump has changed everything, setting his sights on cities near New York and it requires a young leader who isn't afraid to fight. Mussab is a fighter and isn't satisfied with the status quo. He wants to take what makes Jersey City great and fix what needs fixing.",
+                "keywords": ["fulop", "previous mayor", "liked", "anti-fulop"]
+            },
+            "fulop_negative": {
+                "question": "I disliked our previous Mayor Fulop. How is Mussab going to be different?",
+                "answer": "Mussab ultimately believes in a more progressive future for Jersey City. We need to aggressively create policies that support the working class and underserved communities of our city. Our previous Mayor didn't do nearly enough here.",
+                "keywords": ["disliked fulop", "different", "progressive", "working class"]
+            },
+            "mcgreevey": {
+                "question": "I want to vote for Jim McGreevey, why should I vote for Mussab?",
+                "answer": "McGreevey left the governorship in disgrace. He was clouded in scandal and there's no reason he won't bring the same negativity to Jersey City. We need new leadership, not the worst of what New Jersey machine politics has to offer.",
+                "keywords": ["mcgreevey", "jim mcgreevey", "governor"]
+            },
+            "odea": {
+                "question": "I want to vote for Bill O'Dea, why should I vote for Mussab?",
+                "answer": "O'Dea has been a valuable public servant to Hudson County, but he doesn't reflect our city. Our city is young and full of immigrants. He represents the old order of politics when our city desperately needs change.",
+                "keywords": ["o'dea", "bill o'dea", "hudson county"]
+            },
+            "solomon": {
+                "question": "I want to vote for James Solomon, why should I vote for Mussab?",
+                "answer": "James Solomon isn't from Jersey City and comes from money. Our city is full of immigrants, working class people, and multi-generational households of Jersey City residents. What Mussab sees as home, Solomon sees as a political opportunity.",
+                "keywords": ["solomon", "james solomon", "money"]
+            }
+        }
+        
+        # Check if the user message matches any of the Mussab-specific questions
+        user_message_lower = user_message.lower()
+        
+        for topic, data in mussab_qa.items():
+            # Check if any keywords match
+            if any(keyword in user_message_lower for keyword in data["keywords"]):
+                return {
+                    'response': data["answer"],
+                    'sources': [{'url': 'https://www.ali2025.com/', 'title': 'Ali 2025 Campaign'}]
+                }
+        
+        # If no specific Q&A match, fall back to general response
         """Generate a response using OpenAI with website context"""
         try:
             # Prepare context from website content

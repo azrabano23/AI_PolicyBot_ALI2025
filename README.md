@@ -1,16 +1,18 @@
-# Ali 2025 Campaign Bot
+# Ali 2025 Campaign Bot 🇺🇸
 
-An AI-powered campaign assistant for Mussab Ali's 2025 Jersey City mayoral campaign. This bot provides real-time information about policies, campaign events, and volunteer opportunities by scraping the official ali2025.com website.
+**The Official AI-Powered Campaign Assistant for Mussab Ali's 2025 Jersey City Mayoral Campaign**
 
-## Features
+This intelligent chatbot provides instant, accurate answers to voter questions about Mussab Ali's policies, experience, and vision for Jersey City. Built specifically for campaign volunteers and staff to help engage with voters effectively.
 
-- 🤖 AI-powered chat interface
-- 🔄 Real-time website scraping from ali2025.com
-- 📱 Responsive React frontend
-- 🌐 Flask backend with RESTful API
-- 📚 Policy and campaign information
-- 🎯 Quick question templates
-- 📖 Source attribution for responses
+## ✨ Key Features
+
+- 🤖 **Smart Q&A System**: 18+ pre-programmed responses to common voter questions
+- 🎠 **Interactive Question Carousel**: Beautiful rotating display of key campaign topics
+- 🇺🇸 **Patriotic Design**: Red, white, and blue theme reflecting American values
+- 📱 **Mobile-Friendly**: Works perfectly on phones, tablets, and computers
+- ⚡ **Real-Time Updates**: Automatically pulls latest info from ali2025.com
+- 🎯 **Campaign-Focused**: Addresses real voter concerns with Mussab's actual positions
+- 📊 **Source Attribution**: Every answer includes links to official campaign materials
 
 ## Project Structure
 
@@ -41,11 +43,54 @@ ali2025-bot/
 - Python 3.8+
 - OpenAI API key (optional, for AI responses)
 
-## Quick Setup
+## 🚀 Quick Start Guide for Campaign Interns
+
+**This is the easiest way to get the bot running on your computer in under 5 minutes!**
+
+### Step 1: Get the Code 📥
+```bash
+# Clone the repository to your computer
+git clone https://github.com/azrabano23/AI_PolicyBot_ALI2025.git
+cd AI_PolicyBot_ALI2025
+```
+
+### Step 2: Set Up the Backend (Server) 🔧
+```bash
+# Go to backend folder
+cd backend
+
+# Create a virtual environment (keeps everything organized)
+python3 -m venv venv
+
+# Activate it
+# On Mac/Linux:
+source venv/bin/activate
+# On Windows:
+# venv\Scripts\activate
+
+# Install required packages
+pip install -r requirements.txt
+```
+
+### Step 3: Set Up the Frontend (Website) 🎨
+```bash
+# Go to frontend folder (open a new terminal window)
+cd frontend
+
+# Install required packages
+npm install
+```
+
+### Step 4: You're Ready! ✅
+That's it! No API keys needed - the bot works perfectly with Mussab's pre-programmed responses.
+
+---
+
+## 📋 Detailed Setup (if you need more help)
 
 ### 1. Clone and Navigate
 ```bash
-cd ali2025-bot
+cd AI_PolicyBot_ALI2025
 ```
 
 ### 2. Backend Setup
@@ -59,7 +104,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Set up environment variables
+# Set up environment variables (optional)
 cp .env.example .env
 # Edit .env and add your OpenAI API key if you have one
 ```
@@ -72,22 +117,53 @@ cd ../frontend
 npm install
 ```
 
-## Running the Application
+## 🏃‍♂️ Running the Application (Campaign Interns)
 
-### Start Backend (Terminal 1)
+**Follow these exact steps every time you want to use the bot:**
+
+### 🔴 Step 1: Start the Backend (Server)
+**Open Terminal/Command Prompt #1:**
 ```bash
-cd backend
+cd AI_PolicyBot_ALI2025/backend
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 python src/app.py
 ```
-Backend will run on http://localhost:5000
+✅ **Success!** You should see:
+- "Updating website cache..."
+- "Running on http://127.0.0.1:8084"
+- "Debugger is active!"
 
-### Start Frontend (Terminal 2)
+👉 **Keep this terminal window open!**
+
+### 🔵 Step 2: Start the Frontend (Website)
+**Open Terminal/Command Prompt #2:**
 ```bash
-cd frontend
+cd AI_PolicyBot_ALI2025/frontend
 npm start
 ```
-Frontend will run on http://localhost:3000
+✅ **Success!** You should see:
+- "Compiled successfully!"
+- "Local: http://localhost:3000" (or similar)
+- Your browser should automatically open
+
+### 🎉 Step 3: Start Using the Bot!
+1. Your browser should open automatically to the bot
+2. If not, go to: **http://localhost:3000** (or the URL shown in terminal)
+3. You'll see a beautiful patriotic interface with a question carousel
+4. Click on any question in the carousel or type your own!
+
+---
+
+## 🔧 Advanced Running (Technical Details)
+
+### Backend Details
+- **Port**: 8084
+- **URL**: http://localhost:8084
+- **Health Check**: http://localhost:8084/api/health
+
+### Frontend Details  
+- **Port**: Usually 3000, 3001, or 3002 (automatically assigned)
+- **Development Server**: React development server with hot reload
 
 ## Environment Variables
 
