@@ -446,5 +446,8 @@ if __name__ == '__main__':
     
     # Run the Flask app
     port = int(os.getenv('PORT', 8085))
-    debug_mode = os.getenv('FLASK_ENV') == 'development'
+    # Detect if running on Railway (production)
+    is_production = os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('PORT')
+    debug_mode = not is_production and os.getenv('FLASK_ENV') == 'development'
+    
     app.run(debug=debug_mode, host='0.0.0.0', port=port)
