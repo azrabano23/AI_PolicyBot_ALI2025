@@ -39,7 +39,7 @@ const Ali2025AdvancedBot = () => {
 
     try {
       // Call your backend API here
-      const apiUrl = process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://your-backend-url.railway.app/api/chat' : 'http://localhost:8085/api/chat');
+      const apiUrl = process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://web-production-faf17.up.railway.app/api/chat' : 'http://localhost:8085/api/chat');
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
