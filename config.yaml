@@ -1,0 +1,135 @@
+# CSRR Faculty Media Tracker Configuration
+
+# Email Settings
+email:
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  sender_email: "your_email@gmail.com"
+  sender_password: "your_app_password"  # Use App Password for Gmail
+  recipient_email: "boss@csrr.rutgers.edu"
+
+# Search Sources
+search_sources:
+  - "google_news"
+  - "bing_news"
+  - "twitter"
+  - "academic_databases"
+  - "youtube"
+  - "podcast_databases"
+
+# Keywords to search for
+keywords:
+  - "op-ed"
+  - "opinion"
+  - "interview"
+  - "television"
+  - "radio"
+  - "podcast"
+  - "commentary"
+  - "analysis"
+  - "editorial"
+  - "column"
+  - "piece"
+
+# API Keys (optional - for enhanced searching)
+api_keys:
+  google_news_api: ""
+  bing_news_api: ""
+  twitter_api_key: ""
+  youtube_api_key: ""
+
+# Search Settings
+search_settings:
+  days_back: 30
+  max_results_per_source: 100
+  search_interval_hours: 24
+  rate_limit_delay_seconds: 1
+
+# Report Settings
+report_settings:
+  monthly_report_day: 1  # Day of month to send report
+  report_hour: 9  # Hour of day to send report (24-hour format)
+  include_charts: true
+  include_summary: true
+  max_articles_in_report: 500
+
+# Faculty List (will be automatically populated from document)
+faculty_affiliates:
+  - "Zain Abdullah"
+  - "Matthew Abraham"
+  - "Atiya Aftab"
+  - "Ghada Ageel"
+  - "Nadia Ahmad"
+  - "Aziza Ahmed"
+  - "Susan M. Akram"
+  - "M. Shahid Alam"
+  - "Khalil Al-Anani"
+  - "Raquel E Aldana"
+  - "Omar Al-Dewachi"
+  - "Tazeen M. Ali"
+  - "Zahra Ali"
+  - "Ousseina Alidou"
+  - "Sabrina Alimahomed-Wilson"
+  - "Nermin Allam"
+  - "Mohamed Alsiadi"
+  - "Mason Ameri"
+  - "Leyla Amzi-Erdogdular"
+  - "Mohamed 'Arafa"
+  - "Abed Awad"
+  - "Muhannad Ayyash"
+  - "Gaiutra Devi Bahadur"
+  - "Asli Ü. Bâli"
+  - "William C. Banks"
+  - "Esther Canty-Barnes"
+  - "Beth Baron"
+  - "Hatem Bazian"
+  - "Rabea Benhalim"
+  - "Emily Berman"
+  - "Khaled A. Beydoun"
+  - "George Bisharat"
+  - "Bidisha Biswas"
+  - "Elise Boddie"
+  - "Mark Bray"
+  - "Umayyah Cable"
+  - "Robert S. Chang"
+  - "Ali R. Chaudhary"
+  - "Cyra A. Choudhury"
+  - "LaToya Baldwin Clark"
+  - "Juan Cole"
+  - "Jorge Contesse"
+  - "Omar S. Dahi"
+  - "Omar Dajani"
+  - "Karam Dana"
+  - "Timothy P. Daniels"
+  - "Meera E. Deo"
+  - "Karishma Desai"
+  - "Veena Dubal"
+  - "Jon Dubin"
+  - "Stephen Dycus"
+  - "Timothy Eatman"
+  - "Taleed El-Sabawi"
+  - "Sarah Eltantawi"
+  - "Noura Erakat"
+  - "John L. Esposito"
+  - "Marta Esquilin"
+  - "Mohammad Fadel"
+  - "Dalia Fahmy"
+  - "Huda J. Fakhreddine"
+  - "John Farmer, Jr."
+  - "Jonathan Feingold"
+  - "Katherine M. Franke"
+  - "Brittany Friedman"
+  - "Emmaia Gelman"
+  - "Ameena Ghaffar-Kucher"
+  - "Behrooz Ghamari-Tabrizi"
+  - "D. Asher Ghertner"
+  - "Rachel Godsil"
+  - "Wendy Greene"
+  - "Catherine M. Grosso"
+  - "Anju Gupta"
+  - "Zeynep Devrim Gürsel"
+  - "Farid Hafez"
+  - "Jonathan Hafetz"
+  - "Haider Ala Hamoudi"
+  - "Rebecca Hankins"
+  - "Adil Haque"

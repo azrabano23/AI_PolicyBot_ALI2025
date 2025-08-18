@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSRR Faculty Media Tracker Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #cc0033 !important;
+        }
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+        }
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: 1px solid rgba(0, 0, 0, 0.125);
+        }
+        .card-header {
+            background-color: #cc0033;
+            color: white;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #cc0033;
+            border-color: #cc0033;
+        }
+        .btn-primary:hover {
+            background-color: #b30029;
+            border-color: #b30029;
+        }
+        .alert {
+            margin-top: 20px;
+        }
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #cc0033;
+        }
+        .stat-label {
+            font-size: 1rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">CSRR Faculty Media Tracker</a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">
+                    Center for Security, Race and Rights - Rutgers Law School
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number" id="totalArticles">0</div>
+                    <div class="stat-label">Total Articles</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number" id="facultyWithCoverage">0</div>
+                    <div class="stat-label">Faculty with Coverage</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number" id="thisMonthArticles">0</div>
+                    <div class="stat-label">This Month</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number" id="lastUpdate">-</div>
+                    <div class="stat-label">Last Updated</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        Actions
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary me-2" onclick="runSearch()">Run Manual Search</button>
+                        <button class="btn btn-success me-2" onclick="generateReport()">Generate Monthly Report</button>
+                        <button class="btn btn-info me-2" onclick="refreshData()">Refresh Data</button>
+                        <button class="btn btn-secondary" onclick="downloadData()">Download Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Articles by Faculty (Top 10)
+                    </div>
+                    <div class="card-body">
+                        <canvas id="facultyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Articles by Type
+                    </div>
+                    <div class="card-body">
+                        <canvas id="typeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Articles -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        Recent Articles (Last 30 Days)
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Faculty</th>
+                                        <th>Title</th>
+                                        <th>Publication</th>
+                                        <th>Type</th>
+                                        <th>Link</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="articlesTable">
+                                    <tr>
+                                        <td colspan="6" class="text-center">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        <div id="alerts"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let mediaData = [];
+        let facultyChart = null;
+        let typeChart = null;
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+        });
+
+        function loadData() {
+            fetch('/api/data')
+                .then(response => response.json())
+                .then(data => {
+                    mediaData = data;
+                    updateStats();
+                    updateCharts();
+                    updateTable();
+                })
+                .catch(error => {
+                    console.error('Error loading data:', error);
+                    showAlert('Error loading data: ' + error.message, 'danger');
+                });
+        }
+
+        function updateStats() {
+            const totalArticles = mediaData.length;
+            const facultyWithCoverage = new Set(mediaData.map(item => item.faculty_name)).size;
+            
+            const thisMonth = new Date();
+            thisMonth.setMonth(thisMonth.getMonth());
+            const thisMonthArticles = mediaData.filter(item => {
+                const itemDate = new Date(item.date);
+                return itemDate.getMonth() === thisMonth.getMonth() && 
+                       itemDate.getFullYear() === thisMonth.getFullYear();
+            }).length;
+
+            const lastUpdate = mediaData.length > 0 ? 
+                new Date(Math.max(...mediaData.map(item => new Date(item.date)))).toLocaleDateString() : 
+                'Never';
+
+            document.getElementById('totalArticles').textContent = totalArticles;
+            document.getElementById('facultyWithCoverage').textContent = facultyWithCoverage;
+            document.getElementById('thisMonthArticles').textContent = thisMonthArticles;
+            document.getElementById('lastUpdate').textContent = lastUpdate;
+        }
+
+        function updateCharts() {
+            // Faculty chart
+            const facultyCounts = {};
+            mediaData.forEach(item => {
+                facultyCounts[item.faculty_name] = (facultyCounts[item.faculty_name] || 0) + 1;
+            });
+
+            const sortedFaculty = Object.entries(facultyCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            const ctx1 = document.getElementById('facultyChart').getContext('2d');
+            if (facultyChart) {
+                facultyChart.destroy();
+            }
+            facultyChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: sortedFaculty.map(item => item[0]),
+                    datasets: [{
+                        label: 'Articles',
+                        data: sortedFaculty.map(item => item[1]),
+                        backgroundColor: '#cc0033',
+                        borderColor: '#cc0033',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Type chart
+            const typeCounts = {};
+            mediaData.forEach(item => {
+                typeCounts[item.type] = (typeCounts[item.type] || 0) + 1;
+            });
+
+            const ctx2 = document.getElementById('typeChart').getContext('2d');
+            if (typeChart) {
+                typeChart.destroy();
+            }
+            typeChart = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(typeCounts),
+                    datasets: [{
+                        data: Object.values(typeCounts),
+                        backgroundColor: [
+                            '#cc0033',
+                            '#ff6666',
+                            '#990026',
+                            '#ff9999',
+                            '#66001a'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        }
+
+        function updateTable() {
+            const now = new Date();
+            const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+            
+            const recentArticles = mediaData
+                .filter(item => new Date(item.date) >= thirtyDaysAgo)
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 50);
+
+            const tableBody = document.getElementById('articlesTable');
+            
+            if (recentArticles.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No recent articles found</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = recentArticles.map(article => `
+                <tr>
+                    <td>${new Date(article.date).toLocaleDateString()}</td>
+                    <td>${article.faculty_name}</td>
+                    <td>${article.title}</td>
+                    <td>${article.publication}</td>
+                    <td><span class="badge bg-secondary">${article.type}</span></td>
+                    <td><a href="${article.url}" target="_blank" class="btn btn-sm btn-outline-primary">View</a></td>
+                </tr>
+            `).join('');
+        }
+
+        function runSearch() {
+            showAlert('Running manual search...', 'info');
+            fetch('/api/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showAlert(`Search completed. Found ${data.results_count} new results.`, 'success');
+                    loadData();
+                } else {
+                    showAlert('Error running search: ' + data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Error running search: ' + error.message, 'danger');
+            });
+        }
+
+        function generateReport() {
+            showAlert('Generating monthly report...', 'info');
+            fetch('/api/report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showAlert('Monthly report generated and sent successfully!', 'success');
+                } else {
+                    showAlert('Error generating report: ' + data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Error generating report: ' + error.message, 'danger');
+            });
+        }
+
+        function refreshData() {
+            showAlert('Refreshing data...', 'info');
+            loadData();
+            setTimeout(() => {
+                showAlert('Data refreshed successfully!', 'success');
+            }, 1000);
+        }
+
+        function downloadData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(mediaData, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "csrr_media_data.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function showAlert(message, type) {
+            const alertsContainer = document.getElementById('alerts');
+            const alertId = 'alert-' + Date.now();
+            
+            const alertHtml = `
+                <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            
+            alertsContainer.innerHTML += alertHtml;
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                const alertElement = document.getElementById(alertId);
+                if (alertElement) {
+                    alertElement.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
