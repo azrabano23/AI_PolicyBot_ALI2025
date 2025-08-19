@@ -6,12 +6,16 @@ Implements Step 2: Enhancement using O3 for empathetic, conversational responses
 import json
 import logging
 from typing import Dict, List, Tuple, Optional, Any
-import openai
+from openai import OpenAI
 from datetime import datetime
 import os
 from dataclasses import dataclass
+from dotenv import load_dotenv
 
 from knowledge_base import KnowledgeBaseManager, KnowledgeItem
+
+# Load environment variables
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -31,8 +35,16 @@ class EnhancedResponseGenerator:
     
     def __init__(self, knowledge_base: KnowledgeBaseManager):
         self.kb = knowledge_base
-        self.openai_client = openai
-        self.openai_client.api_key = os.getenv('OPENAI_API_KEY')
+        self.openai_client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        
+        # Available O3 models with pricing info
+        self.o3_models = {
+            'o3': {'cost_per_1m_tokens': 60.00, 'description': 'Premium O3 reasoning'},
+            'o3-mini': {'cost_per_1m_tokens': 0.60, 'description': 'Cost-effective O3 reasoning'}
+        }
+        
+        # Default to O3-mini for cost effectiveness, but allow override
+        self.preferred_model = os.getenv('O3_MODEL', 'o3-mini')
         
         # Response templates for different languages
         self.response_templates = self._load_response_templates()
@@ -40,7 +52,7 @@ class EnhancedResponseGenerator:
         # Empathy-first prompt engineering
         self.base_system_prompts = self._load_system_prompts()
         
-        logger.info("Enhanced Response Generator initialized with O3-PRO integration")
+        logger.info(f"Enhanced Response Generator initialized with O3 integration - using model: {self.preferred_model}")
     
     def _load_response_templates(self) -> Dict[str, Dict[str, str]]:
         """Load response templates for different languages and scenarios"""
@@ -232,12 +244,12 @@ Gardez les réponses complètes mais conversationnelles, environ 200-400 mots.""
         return "\n".join(summary_parts)
     
     def _generate_with_o3_pro(self, context: ResponseContext, facts_summary: str) -> str:
-        """Generate response using OpenAI O3-PRO model"""
+        """Generate response using OpenAI O3 model with advanced reasoning"""
         
         # Select appropriate system prompt based on language
         system_prompt = self.base_system_prompts.get(context.detected_language, self.base_system_prompts["en"])
         
-        # Create comprehensive context message
+        # Create comprehensive context message optimized for O3 reasoning
         context_message = f"""
 VOTER QUESTION: {context.user_query}
 DETECTED LANGUAGE: {context.detected_language}
@@ -247,12 +259,13 @@ RELEVANT CAMPAIGN INFORMATION:
 
 RESPONSE REQUIREMENTS:
 - Respond in {context.detected_language}
-- Follow the empathy-first structure outlined in your system prompt
+- Follow the empathy-first structure: acknowledge → explain → show action → connect benefits → future plan
 - Use specific facts and numbers from the provided information
-- Keep response length between 200-400 words
-- Make it conversational and personally relevant to Jersey City residents
+- Keep response conversational and between 200-400 words
+- Make it personally relevant to Jersey City residents
 - Include Mussab's track record and future plans
 - End with an inspiring, values-based message
+- Think through your reasoning step by step for the most empathetic and effective response
 """
 
         messages = [
@@ -261,31 +274,40 @@ RESPONSE REQUIREMENTS:
         ]
         
         try:
-            # Use O3-PRO model (adjust model name based on availability)
-            # Note: Update model name when O3-PRO becomes available
-            response = self.openai_client.ChatCompletion.create(
-                model="o1-pro",  # Will update to "o3-pro" when available
+            # Try O3 model first (premium reasoning)
+            logger.info(f"Using O3 model: {self.preferred_model}")
+            response = self.openai_client.chat.completions.create(
+                model=self.preferred_model,
                 messages=messages,
-                max_tokens=800,
-                temperature=0.7,
-                presence_penalty=0.1,
-                frequency_penalty=0.1
+                max_completion_tokens=600,  # O3 models use max_completion_tokens
+                # Note: O3 models don't support temperature, presence_penalty, etc.
             )
             
             return response.choices[0].message.content.strip()
             
         except Exception as e:
-            logger.warning(f"O3-PRO call failed, falling back to GPT-4: {str(e)}")
+            logger.warning(f"O3 model {self.preferred_model} failed: {str(e)}, falling back to O1")
             
-            # Fallback to GPT-4 if O3-PRO is not available
-            response = self.openai_client.ChatCompletion.create(
-                model="gpt-4-turbo-preview",
-                messages=messages,
-                max_tokens=800,
-                temperature=0.7
-            )
-            
-            return response.choices[0].message.content.strip()
+            # Fallback to O1-mini if O3 fails
+            try:
+                response = self.openai_client.chat.completions.create(
+                    model="o1-mini",
+                    messages=messages
+                )
+                return response.choices[0].message.content.strip()
+                
+            except Exception as e2:
+                logger.warning(f"O1 fallback failed: {str(e2)}, using GPT-4")
+                
+                # Final fallback to GPT-4
+                response = self.openai_client.chat.completions.create(
+                    model="gpt-4-turbo-preview",
+                    messages=messages,
+                    max_tokens=600,
+                    temperature=0.7
+                )
+                
+                return response.choices[0].message.content.strip()
     
     def _post_process_response(self, response: str, context: ResponseContext) -> str:
         """Post-process the generated response for quality and consistency"""
