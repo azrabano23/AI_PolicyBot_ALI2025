@@ -135,7 +135,7 @@ if __name__ == '__main__':
     load_initial_data()
     
     # Run the Flask app
-    port = int(os.getenv('PORT', 8085))
+    port = int(os.getenv('PORT', 3000))
     is_production = os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('PORT')
     debug_mode = not is_production and os.getenv('FLASK_ENV') == 'development'
     
