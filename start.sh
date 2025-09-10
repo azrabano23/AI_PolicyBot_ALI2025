@@ -51,6 +51,7 @@ source venv/bin/activate
 # Install Python dependencies
 echo -e "${YELLOW}Installing Python dependencies...${NC}"
 pip install -r requirements.txt
+pip install openai --upgrade
 
 # Check for .env file
 if [ ! -f ".env" ]; then
