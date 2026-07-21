@@ -57,3 +57,4 @@ frontend/dist/
 # Test databases
 *test*.db
 ali_2025_*.db
+.env*
