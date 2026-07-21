@@ -279,7 +279,7 @@ RESPONSE REQUIREMENTS:
             response = self.openai_client.chat.completions.create(
                 model=self.preferred_model,
                 messages=messages,
-                max_completion_tokens=600,  # O3 models use max_completion_tokens
+                max_tokens=600,  # O3 models use max_tokens
                 # Note: O3 models don't support temperature, presence_penalty, etc.
             )
             
@@ -288,20 +288,22 @@ RESPONSE REQUIREMENTS:
         except Exception as e:
             logger.warning(f"O3 model {self.preferred_model} failed: {str(e)}, falling back to O1")
             
-            # Fallback to O1-mini if O3 fails
+            # Fallback to GPT-4 if O3 fails
             try:
                 response = self.openai_client.chat.completions.create(
-                    model="o1-mini",
-                    messages=messages
+                    model="gpt-4-turbo-preview",
+                    messages=messages,
+                    max_tokens=600,
+                    temperature=0.7
                 )
                 return response.choices[0].message.content.strip()
                 
             except Exception as e2:
-                logger.warning(f"O1 fallback failed: {str(e2)}, using GPT-4")
+                logger.warning(f"GPT-4 fallback failed: {str(e2)}, using GPT-3.5")
                 
-                # Final fallback to GPT-4
+                # Final fallback to GPT-3.5
                 response = self.openai_client.chat.completions.create(
-                    model="gpt-4-turbo-preview",
+                    model="gpt-3.5-turbo",
                     messages=messages,
                     max_tokens=600,
                     temperature=0.7

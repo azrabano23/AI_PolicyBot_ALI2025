@@ -64,7 +64,7 @@ def main():
             messages=[
                 {"role": "user", "content": "Hello! Can you confirm you're working properly?"}
             ],
-            max_completion_tokens=50
+            max_tokens=50
         )
         
         print(f"✅ {selected_model} is working!")
